@@ -1,27 +1,53 @@
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app="chat350">
 <head>
 	<title>Tutorial</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
-<body>
+<body ng-controller="MainCtl">
 	<div class="container">
 		<div class="jumbotron">
-			<h1> Bootstrap is working!</h1>
+			<h1>chat350</h1>
 		</div>
 		<div class='panel panel-default'>
-			<div class='panel-body'>
-				<p> So is <i class="fa fa-spinner fa-spin"></i> font-awesome.</p>
-			</div>
+			{{messages}}
+			<input type="text" placeholder="type here" ng-model="msg"><button class="btn btn-primary" ng-click="send()">Send</button>
 		</div>
-		<div class='panel panel-default'>
-			<div class='panel-body'>
-				<input type="text" placeholder="type here" ng-model="yes">
-				<p>Angular working? {{yes}}</p>
-			</div>
-		</div>
+			
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+	<script>
+		var app = angular.module("chat350", []);
+
+		app.controller("MainCtl", ["$scope", function($scope){
+			$scope.messages = [];
+
+			var conn = new WebSocket("ws://localhost:8080/ws");
+
+			conn.onclose = function(e){
+				$scope.$apply(function(){
+					$scope.messages.push("Disconnected");
+				})
+			}
+
+			conn.onopen = function(e){
+				$scope.$apply(function(){
+					$scope.messages.push("Connected");
+				})
+			}
+
+			conn.onmessage = function(e){
+				$scope.$apply(function(){
+					$scope.messages.push(e.data);
+				})
+			}
+
+			$scope.send = function(){
+				conn.send($scope.msg);
+				$scope.msg = '';
+			}
+		}])
+	</script>
 </body>
 </html>

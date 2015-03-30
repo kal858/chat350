@@ -19,3 +19,8 @@ The standard HTTP protocol provides a stateless half-duplex connection. The
 WebSockets API on the other hand creates a full duplex connection between the 
 server and the client which can make it more responsive than traditional
 HTTP in real time applications.
+
+## Sources
+_calicoJake_ provided some useful starting material which I was inspired by so
+I continued to develop upon his basic starting application.
+https://www.youtube.com/watch?v=U80k7fTEqNw
