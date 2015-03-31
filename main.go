@@ -15,6 +15,17 @@ import (
 	"net/http"
 )
 
+var connections map[*websocket.Conn]bool
+
+func sendAll(msg []byte) {
+	for conn := range connections {
+		if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+			delete(connections, conn)
+			return
+		}
+	}
+}
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -27,16 +38,17 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
+	connections[conn] = true
 	for {
 		// Read messages from the connection
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
+			delete(connections, conn)
 			return
 		}
 		log.Println(string(msg))
-		if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-			return
-		}
+		sendAll(msg)
+
 	}
 }
 
@@ -45,6 +57,8 @@ func main() {
 	port := flag.Int("port", 8080, "Port to listen on")
 	dir := flag.String("directory", "www/", "Web directory")
 	flag.Parse()
+
+	connections = make(map[*websocket.Conn]bool)
 
 	// Set up the request handlers
 	fs := http.Dir(*dir)
