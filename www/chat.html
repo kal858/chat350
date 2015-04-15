@@ -29,24 +29,30 @@
 
 			conn.onclose = function(e){
 				$scope.$apply(function(){
-					$scope.messages.push("Disconnected");
+					//$scope.messages.push("Disconnected");
 				})
 			}
 
 			conn.onopen = function(e){
 				$scope.$apply(function(){
-					$scope.messages.push("Connected");
+					//$scope.messages.push("Connected");
 				})
 			}
 
 			conn.onmessage = function(e){
 				$scope.$apply(function(){
-					$scope.messages.push(e.data);
+					$scope.messages.push(JSON.parse(e.data));
 				})
 			}
 
 			$scope.send = function(){
-				conn.send($scope.msg);
+				var new_message = {
+					type: "message_type",
+					text: $scope.msg,
+					id:   "Chico",
+					date: Date.now()
+				};
+				conn.send(JSON.stringify(new_message));
 				$scope.msg = '';
 			}
 		}])
@@ -61,7 +67,7 @@
 		<div ng-controller="MainCtl">
 		<input type="text" placeholder="type here" ng-model="msg">
 			<button class="btn btn-primary" ng-click="send()">Send</button>
-			<div ng-repeat="m in messages" class="message">{{m}}</div>	
+			<div ng-repeat="m in messages" class="message"><b>{{m.id}}</b> {{m.text}}</div>	
 		</div>
 			
 	</div>
