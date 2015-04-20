@@ -3,9 +3,12 @@
 <head>
 	<title>Tutorial</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"> </script>
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.15/angular-animate.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
 	<style>
 		.message {
@@ -17,13 +20,33 @@
 		.message.ng-enter-active{
 			opacity: 0;
 		}
+
+		html {
+		  position: relative;
+		  min-height: 100%;
+		}
+		body {
+		  /* Margin bottom by footer height */
+		  margin-bottom: 60px;
+		}
+		.footer {
+		  position: absolute;
+		  bottom: 0;
+		  width: 100%;
+		  /* Set the fixed height of the footer here */
+		  height: 60px;
+		  background-color: #f5f5f5;
+	}
 	</style>
 
 		<script>
+		// Initialize the angular application
 		var app = angular.module("chat350", ['ngAnimate']);
 
+		// The controller for the application
 		app.controller("MainCtl", ["$scope", function($scope){
 			$scope.messages = [];
+			$scope.name = "Guest";
 
 			var conn = new WebSocket("ws://localhost:8080/ws");
 
@@ -49,13 +72,33 @@
 				var new_message = {
 					type: "message_type",
 					text: $scope.msg,
-					id:   "Chico",
+					id:   $scope.name,
 					date: Date.now()
 				};
 				conn.send(JSON.stringify(new_message));
 				$scope.msg = '';
 			}
+
+			$scope.updateName = function(){
+				$scope.name = $scope.nameInput;
+				console.log("Updated name!");
+			}
 		}])
+
+		// Add module to add support for pressing 'enter-key' to submit input message
+		angular.module('chat350').directive('ngEnter', function() {
+        return function(scope, element, attrs) {
+            element.bind("keydown keypress", function(event) {
+                if(event.which === 13) {
+                    scope.$apply(function(){
+                        scope.$eval(attrs.ngEnter, {'event': event});
+                    });
+
+                    	event.preventDefault();
+                	}
+            	});
+        	};
+    	});
 	</script>
 
 </head>
@@ -64,10 +107,45 @@
 		<div class="jumbotron">
 			<h1>chat350</h1>
 		</div>
+	</div>
+
 		<div ng-controller="MainCtl">
-		<input type="text" placeholder="type here" ng-model="msg">
-			<button class="btn btn-primary" ng-click="send()">Send</button>
-			<div ng-repeat="m in messages" class="message"><b>{{m.id}}</b> {{m.text}}</div>	
+			
+			<div class="container">
+				<div ng-repeat="m in messages" class="message"><b>{{m.id}}</b> {{m.text}}</div>	
+			</div>
+			
+			<footer class="footer">
+				<div class="container">
+					<div class="col-lg-8">
+						<input class="form-control" type="text" placeholder="type here" ng-model="msg" ng-enter="send()">
+					</div>
+					<button class="btn btn-primary" ng-click="send()">Send</button>
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Change Name</button>
+				</div>
+
+			</footer>
+			
+			<!-- Modal for changing user name -->
+			<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h2 class="modal-title" id="myModalLabel">Update Name</h2>
+			      </div>
+			      <div class="modal-body">
+			      	<div class="form-group">
+			      		<label class="control-label">Name: </label>
+			      		<input type="text" placeholder="" ng-model="nameInput">
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			        <button type="button" class="btn btn-primary" ng-click="updateName()">Save changes</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
 		</div>
 			
 	</div>
