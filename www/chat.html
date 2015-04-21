@@ -3,6 +3,7 @@
 <head>
 	<title>Tutorial</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"> </script>
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
@@ -11,6 +12,11 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
 	<style>
+		.jumbotron {
+			background-color: #2E2E2E;
+			color: white;
+			font-family: 'Pacifico', cursive;
+		}
 		.message {
 			transition:0.09s linear all;
 		}
@@ -48,7 +54,9 @@
 			$scope.messages = [];
 			$scope.name = "Guest";
 
-			var conn = new WebSocket("ws://localhost:8080/ws");
+			// Parse the URL to and use that as the address of the ws server
+			var wsServer = "ws://" + window.location.host + "/ws";
+			var conn = new WebSocket(wsServer);
 
 			conn.onclose = function(e){
 				$scope.$apply(function(){
@@ -69,11 +77,12 @@
 			}
 
 			$scope.send = function(){
+				var d = new Date();
 				var new_message = {
 					type: "message_type",
 					text: $scope.msg,
 					id:   $scope.name,
-					date: Date.now()
+					date: d.getHours() +":" + d.getMinutes() + ":" + d.getSeconds()
 				};
 				conn.send(JSON.stringify(new_message));
 				$scope.msg = '';
@@ -105,23 +114,25 @@
 <body>
 	<div class="container">
 		<div class="jumbotron">
-			<h1>chat350</h1>
+			<h1 color="white">Chat 350</h1>
 		</div>
 	</div>
 
 		<div ng-controller="MainCtl">
 			
 			<div class="container">
-				<div ng-repeat="m in messages" class="message"><b>{{m.id}}</b> {{m.text}}</div>	
+				<div ng-repeat="m in messages" class="message">{{m.date}} <b>{{m.id}}</b> {{m.text}}</div>
 			</div>
 			
 			<footer class="footer">
 				<div class="container">
-					<div class="col-lg-8">
+					<div class="col-lg-9">
 						<input class="form-control" type="text" placeholder="type here" ng-model="msg" ng-enter="send()">
 					</div>
-					<button class="btn btn-primary" ng-click="send()">Send</button>
-					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Change Name</button>
+					<div class="col-lg-3">
+						<button class="btn btn-primary" ng-click="send()">Send</button>
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Change Name</button>
+					</div>
 				</div>
 
 			</footer>

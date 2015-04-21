@@ -48,12 +48,12 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Println(string(msg))
 		sendAll(msg)
-
 	}
 }
 
 func main() {
 	// Parse the command line options for the web server
+	host := flag.String("host", "localhost", "IP address to listen on")
 	port := flag.Int("port", 8080, "Port to listen on")
 	dir := flag.String("directory", "www/", "Web directory")
 	flag.Parse()
@@ -66,11 +66,10 @@ func main() {
 	http.Handle("/", filehandler)
 	http.HandleFunc("/ws", wsHandler)
 
-	log.Printf("Listening on port: %d\n", *port)
-	addr := fmt.Sprintf("localhost:%d", *port)
+	log.Printf("Listening on %s:%d\n", *host, *port)
+	addr := fmt.Sprintf("%s:%d", *host, *port)
 
 	// Enter into blocking mode
 	err := http.ListenAndServe(addr, nil)
 	fmt.Println(err.Error())
-
 }
