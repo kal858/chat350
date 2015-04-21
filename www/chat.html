@@ -94,7 +94,7 @@
 			}
 		}])
 
-		// Add module to add support for pressing 'enter-key' to submit input message
+		// Create module to add support for pressing 'enter-key' to submit chat message
 		angular.module('chat350').directive('ngEnter', function() {
         return function(scope, element, attrs) {
             element.bind("keydown keypress", function(event) {
