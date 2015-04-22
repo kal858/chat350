@@ -70,10 +70,11 @@ of extra reading of documentation, tutorials and instructional videos.
 My primary goal with this project was to gain further skills that I could use
 to complement my electrical engineering background. I plan to specialize in 
 embedded systems development and the ability to use websockets and angularJS
-will help me in developing powerful, user friendly interfaces for my applicaitons.
+will help me in developing powerful, user friendly interfaces for my applications.
 Golang as well is a very interesting way to write systems software that can
 easily be scaled for distributed systems for maximum concurrency. The use
-of interfaces to maximize abstraction and productivity is also very valuable.
+of interfaces to maximize abstraction and programmer productivity is also very 
+valuable.
 
 ## Sources
 _calicoJake_ provided some useful starting material which I was inspired by so
